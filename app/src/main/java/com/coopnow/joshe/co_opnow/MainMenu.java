@@ -32,7 +32,7 @@ public class MainMenu extends AppCompatActivity {
        seeAllPostsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainMenu.this, ListofPosts.class));
+                startActivity(new Intent(MainMenu.this, PostGallery.class));
                 finish();
             }
         });

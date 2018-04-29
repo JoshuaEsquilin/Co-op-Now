@@ -6,11 +6,12 @@ import android.os.Bundle;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 @IgnoreExtraProperties
-public class Post {
+public class Post implements Serializable{
 
     public String userID;
     public String author;
@@ -38,6 +39,18 @@ public class Post {
         this.location = location;
     }
 
+    public Post(Map<String, Object> map){
+        this.userID = map.get("userID").toString();
+        this.author = map.get("author").toString();
+        this.gameName = map.get("gameName").toString();
+        this.platform = map.get("description").toString();
+        this.gamerTag = map.get("gamerTag").toString();
+        this.description = map.get("platform").toString();
+        this.numOfPeople = map.get("numOfPeople").toString();
+        this.availability = map.get("availability").toString();
+        this.location = map.get("location").toString();
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -52,6 +65,38 @@ public class Post {
         result.put("location", location);
 
         return result;
+    }
+
+    public String getUserID(){
+        return this.userID;
+    }
+
+    public String getAuthor(){
+        return this.author;
+    }
+
+    public String getGameName(){
+        return this.gameName;
+    }
+
+    public String getPlatform(){
+        return this.platform;
+    }
+
+    public String getDescription(){
+        return this.description;
+    }
+
+    public String getNumOfPeople(){
+        return this.numOfPeople;
+    }
+
+    public String getAvailability(){
+        return this.availability;
+    }
+
+    public String getLocation(){
+        return this.location;
     }
 }
 

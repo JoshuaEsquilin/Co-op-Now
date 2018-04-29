@@ -1,6 +1,8 @@
 package com.coopnow.joshe.co_opnow;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,6 +31,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button loginSignInButton;
     private Button loginSignUpButton;
 
+    private SharedPreferences sharedPrefs;
+    private SharedPreferences.Editor sharedPrefsEditor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +51,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // Click listeners
         loginSignInButton.setOnClickListener(this);
         loginSignUpButton.setOnClickListener(this);
+
+        // Shared Prefs
+        sharedPrefs = getSharedPreferences("username", Context.MODE_PRIVATE);
+        sharedPrefsEditor = sharedPrefs.edit();
     }
 
     @Override
@@ -110,6 +119,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void onAuthSuccess(FirebaseUser user) {
         String username = usernameFromEmail(user.getEmail());
+
+        // Store username in SharedPrefs
+        sharedPrefsEditor.putString("username", username);
+        sharedPrefsEditor.apply();
 
         // Write new user
         writeNewUser(user.getUid(), username, user.getEmail());
