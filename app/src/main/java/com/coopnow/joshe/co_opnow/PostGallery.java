@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -31,6 +32,7 @@ public class PostGallery extends AppCompatActivity {
     private EditText searchQuery;
     private Button searchButton;
     private Switch toggleSelfPostsOnly;
+    private DatabaseReference ref;
     private PostAdapter postAdapter;
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
@@ -56,8 +58,43 @@ public class PostGallery extends AppCompatActivity {
 
         sharedPrefs = getSharedPreferences("username", Context.MODE_PRIVATE);
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("posts");
-        ref.addListenerForSingleValueEvent(
+        searchQuery = findViewById(R.id.editText_SearchQuery);
+        searchButton = findViewById(R.id.button_SearchPosts);
+        toggleSelfPostsOnly = findViewById(R.id.switch_SelfPostOnly);
+
+        recyclerView = findViewById(R.id.recyclerView_Posts);
+        linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        postAdapter = new PostAdapter(getApplicationContext(), getAllPosts());
+        recyclerView.setAdapter(postAdapter);
+
+        ref = FirebaseDatabase.getInstance().getReference().child("posts");
+
+        setupListeners();
+    }
+
+    private void setupListeners(){
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(searchQuery.getText().toString().equals("")){
+                    postAdapter.update(getAllPosts());
+                } else {
+                    postAdapter.update(getAllPosts(searchQuery.getText().toString()));
+                }
+            }
+        });
+        toggleSelfPostsOnly.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    postAdapter.update(getAllUserPosts());
+                } else{
+                    postAdapter.update(getAllPosts());
+                }
+            }
+        });
+        ref.addValueEventListener(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -69,50 +106,6 @@ public class PostGallery extends AppCompatActivity {
                         // handle error
                     }
                 });
-
-        searchQuery = findViewById(R.id.editText_SearchQuery);
-        searchButton = findViewById(R.id.button_SearchPosts);
-        toggleSelfPostsOnly = findViewById(R.id.switch_SelfPostOnly);
-
-        recyclerView = findViewById(R.id.recyclerView_Posts);
-        linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
-        postAdapter = new PostAdapter(getApplicationContext(), getAllPosts());
-        recyclerView.setAdapter(postAdapter);
-        postAdapter.notifyDataSetChanged();
-
-        setupListeners();
-    }
-
-    private void setupListeners(){
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(searchQuery.getText().toString().equals("")){
-                    postAdapter = new PostAdapter(getApplicationContext(), getAllPosts());
-                    recyclerView.setAdapter(postAdapter);
-                    postAdapter.notifyDataSetChanged();
-                } else {
-                    postAdapter = new PostAdapter(getApplicationContext(), getAllPosts(searchQuery.getText().toString()));
-                    recyclerView.setAdapter(postAdapter);
-                    postAdapter.notifyDataSetChanged();
-                }
-            }
-        });
-        toggleSelfPostsOnly.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
-                    postAdapter = new PostAdapter(getApplicationContext(), getAllUserPosts());
-                    recyclerView.setAdapter(postAdapter);
-                    postAdapter.notifyDataSetChanged();
-                } else{
-                    postAdapter = new PostAdapter(getApplicationContext(), getAllPosts());
-                    recyclerView.setAdapter(postAdapter);
-                    postAdapter.notifyDataSetChanged();
-                }
-            }
-        });
     }
 
     private void extractPosts(Map<String,Object> postsMap){
@@ -122,6 +115,7 @@ public class PostGallery extends AppCompatActivity {
             posts.add(new Post(singlePost));
         }
         allPosts = posts;
+        postAdapter.update(allPosts);
     }
 
     private ArrayList getAllPosts(){

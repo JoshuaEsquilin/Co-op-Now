@@ -13,38 +13,38 @@ import java.util.ArrayList;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder>{
 
-    private ArrayList<Post> entries;
+    private ArrayList<Post> data;
     private Context context;
 
-    public PostAdapter(Context context, ArrayList<Post> entries){
+    public PostAdapter(Context context, ArrayList<Post> data){
         this.context = context;
-        this.entries = entries;
+        this.data = data;
     }
 
     @Override
     public int getItemCount(){
-        return this.entries.size();
+        return this.data.size();
     }
 
     @Override
     public PostHolder onCreateViewHolder(ViewGroup viewGroup, int i){
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.list_item__post, viewGroup, false);
-        return new PostHolder(view, context, entries);
+        return new PostHolder(view, context, data);
     }
 
     @Override
     public void onBindViewHolder(PostHolder postHolder, final int i){
-        postHolder.gameName.setText(entries.get(i).getGameName());
-        postHolder.postDesc.setText(entries.get(i).getDescription());
-        postHolder.availability.setText(entries.get(i).getAvailability());
-        postHolder.numOfPeople.setText(entries.get(i).getNumOfPeople());
+        postHolder.gameName.setText(data.get(i).getGameName());
+        postHolder.postDesc.setText(data.get(i).getDescription());
+        postHolder.availability.setText(data.get(i).getAvailability());
+        postHolder.numOfPeople.setText(data.get(i).getNumOfPeople());
 
         postHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, PostInfo.class);
-                intent.putExtra("Post", entries.get(i));
+                intent.putExtra("Post", data.get(i));
                 context.startActivity(intent);
             }
         });
@@ -53,6 +53,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder>{
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    public void update(ArrayList<Post> newData){
+        data.clear();
+        data.addAll(newData);
+        notifyDataSetChanged();
     }
 
     public class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
