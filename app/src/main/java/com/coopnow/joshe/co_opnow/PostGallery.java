@@ -121,7 +121,6 @@ public class PostGallery extends AppCompatActivity {
             Map singlePost = (Map) entry.getValue();
             posts.add(new Post(singlePost));
         }
-        Toast.makeText(getApplicationContext(), "Extracted Post: " + posts.get(0).getGameName(), Toast.LENGTH_LONG).show();
         allPosts = posts;
     }
 
