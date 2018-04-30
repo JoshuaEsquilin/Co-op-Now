@@ -112,7 +112,8 @@ public class PostGallery extends AppCompatActivity {
         ArrayList<Post> posts = new ArrayList<>();
         for (Map.Entry<String, Object> entry : postsMap.entrySet()){
             Map singlePost = (Map) entry.getValue();
-            posts.add(new Post(singlePost));
+            String key = entry.getKey();
+            posts.add(new Post(singlePost, key));
         }
         allPosts = posts;
         postAdapter.update(allPosts);

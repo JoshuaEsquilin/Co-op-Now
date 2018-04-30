@@ -22,6 +22,7 @@ public class Post implements Serializable{
     public String numOfPeople;
     public String availability;
     public String location;
+    private String key;
 
     public Post() {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
@@ -39,7 +40,7 @@ public class Post implements Serializable{
         this.location = location;
     }
 
-    public Post(Map<String, Object> map){
+    public Post(Map<String, Object> map, String key){
         this.userID = map.get("userID").toString();
         this.author = map.get("author").toString();
         this.gameName = map.get("gameName").toString();
@@ -49,6 +50,7 @@ public class Post implements Serializable{
         this.numOfPeople = map.get("numOfPeople").toString();
         this.availability = map.get("availability").toString();
         this.location = map.get("location").toString();
+        this.key = key;
     }
 
     @Exclude
@@ -97,6 +99,10 @@ public class Post implements Serializable{
 
     public String getLocation(){
         return this.location;
+    }
+
+    public String getKey(){
+        return this.key;
     }
 }
 

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder>{
 
     private ArrayList<Post> data;
+    private ArrayList<String> keys;
     private Context context;
 
     public PostAdapter(Context context, ArrayList<Post> data){
@@ -44,7 +45,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder>{
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, PostInfo.class);
-                intent.putExtra("Post", data.get(i));
+                intent.putExtra("post_key", data.get(i).getKey());
                 context.startActivity(intent);
             }
         });
@@ -67,7 +68,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder>{
         TextView availability;
         TextView numOfPeople;
         Context context;
-        ArrayList posts;
+        ArrayList<Post> posts;
 
         PostHolder(View view, Context context, ArrayList posts){
             super(view);
@@ -83,7 +84,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder>{
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(context, PostInfo.class);
-            intent.putExtra("Post", (Post)this.posts.get(getLayoutPosition()));
+            intent.putExtra("post_key", this.posts.get(getLayoutPosition()).getKey());
             this.context.startActivity(intent);
         }
     }
