@@ -1,5 +1,6 @@
 package com.coopnow.joshe.co_opnow;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,7 +12,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -33,7 +37,7 @@ import java.util.Map;
 //               from the current signed in user from a Post Adapter.  It also has a search function
 //               to allow the user to search for a game that may be posted.
 
-public class PostGallery extends AppCompatActivity {
+public class PostGallery extends Fragment {
 
     private EditText searchQuery;
     private Button searchButton;
@@ -46,32 +50,44 @@ public class PostGallery extends AppCompatActivity {
     private SharedPreferences sharedPrefs;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post_gallery);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        return inflater.inflate(R.layout.activity_post_gallery, container, false);
+    }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        View view = getView();
+
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), MakingAGroup.class));
+                // startActivity(new Intent(getActivity(), MakingAGroup.class));
+                Fragment nextFrag = new MakingAGroup();
+                getActivity().getFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, nextFrag)
+                        .addToBackStack(null)
+                        .commit();
             }
         });
 
         allPosts = new ArrayList<>();
 
-        sharedPrefs = getSharedPreferences("username", Context.MODE_PRIVATE);
+        sharedPrefs = getActivity().getSharedPreferences("username", Context.MODE_PRIVATE);
 
-        searchQuery = findViewById(R.id.editText_SearchQuery);
-        searchButton = findViewById(R.id.button_SearchPosts);
-        toggleSelfPostsOnly = findViewById(R.id.switch_SelfPostOnly);
+        searchQuery = view.findViewById(R.id.editText_SearchQuery);
+        searchButton = view.findViewById(R.id.button_SearchPosts);
+        toggleSelfPostsOnly = view.findViewById(R.id.switch_SelfPostOnly);
 
-        recyclerView = findViewById(R.id.recyclerView_Posts);
-        linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView = view.findViewById(R.id.recyclerView_Posts);
+        linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        postAdapter = new PostAdapter(getApplicationContext(), getAllPosts());
+        postAdapter = new PostAdapter(getActivity(), getAllPosts());
         recyclerView.setAdapter(postAdapter);
 
         ref = FirebaseDatabase.getInstance().getReference().child("posts");

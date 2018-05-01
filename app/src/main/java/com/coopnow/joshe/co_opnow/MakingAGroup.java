@@ -1,11 +1,15 @@
 package com.coopnow.joshe.co_opnow;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -25,7 +29,7 @@ import java.util.Map;
 // Description:  Making a Group handles the creation of a post and saving it to the database.
 //               After creation, it moves to PostInfo to display the contents.
 
-public class MakingAGroup extends AppCompatActivity {
+public class MakingAGroup extends Fragment {
 
     private static final String TAG = "MakingAGroup";
     private static final String REQUIRED = "Required";
@@ -45,20 +49,26 @@ public class MakingAGroup extends AppCompatActivity {
     String key;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_making_agroup);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        return inflater.inflate(R.layout.activity_making_agroup, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        View view = getView();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mGameName = findViewById(R.id.name_input);
-        mPlatform = findViewById(R.id.platform_input);
-        mGamerTag = findViewById(R.id.gamertag_input);
-        mDescription = findViewById(R.id.Desc_input);
-        mNumberOfPeople = findViewById(R.id.numPeople_input);
-        mTime = findViewById(R.id.time_input);
-        mLocation = findViewById(R.id.location_input);
-        mCreateGroup = findViewById(R.id.button13);
+        mGameName = view.findViewById(R.id.name_input);
+        mPlatform = view.findViewById(R.id.platform_input);
+        mGamerTag = view.findViewById(R.id.gamertag_input);
+        mDescription = view.findViewById(R.id.Desc_input);
+        mNumberOfPeople = view.findViewById(R.id.numPeople_input);
+        mTime = view.findViewById(R.id.time_input);
+        mLocation = view.findViewById(R.id.location_input);
+        mCreateGroup = view.findViewById(R.id.button13);
 
         mCreateGroup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,6 +77,7 @@ public class MakingAGroup extends AppCompatActivity {
             }
         });
     }
+
 
     private void submitPost() {
         final String game = mGameName.getText().toString();
@@ -109,7 +120,7 @@ public class MakingAGroup extends AppCompatActivity {
 
         // Disable button so there are no multi-posts from the user
         setEditingEnabled(false);
-        Toast.makeText(this, "Submitting Post...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Submitting Post...", Toast.LENGTH_SHORT).show();
 
         final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -123,7 +134,7 @@ public class MakingAGroup extends AppCompatActivity {
                         if (user == null) {
                             // User is null, error out since the user could not be found
                             Log.e(TAG, "User " + userId + " is unexpectedly null");
-                            Toast.makeText(MakingAGroup.this,
+                            Toast.makeText(getActivity(),
                                     "Error: could not find user.",
                                     Toast.LENGTH_SHORT).show();
                         } else {
@@ -133,10 +144,9 @@ public class MakingAGroup extends AppCompatActivity {
 
                         // Finish this Activity,and display the indo in PostInfo
                         setEditingEnabled(true);
-                        Intent intent =  new Intent(MakingAGroup.this, PostInfo.class);
+                        Intent intent =  new Intent(getActivity(), PostInfo.class);
                         intent.putExtra(PostInfo.EXTRA_POST_KEY, key);
                         startActivity(intent);
-                        finish();
 
                     }
 

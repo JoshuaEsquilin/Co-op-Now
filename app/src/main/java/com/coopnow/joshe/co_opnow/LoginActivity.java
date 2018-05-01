@@ -132,7 +132,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         writeNewUser(user.getUid(), username, user.getEmail());
 
         // Go to MainMenu
-        startActivity(new Intent(LoginActivity.this, MainMenu.class));
+        startActivity(new Intent(LoginActivity.this, CoOpNowMain.class));
         finish();
     }
 
