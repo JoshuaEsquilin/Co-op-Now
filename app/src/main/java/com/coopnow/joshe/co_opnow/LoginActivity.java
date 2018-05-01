@@ -21,6 +21,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+// Author:       Joshua Esquilin
+// Date:         4/30/2018
+// Description:  LoginActivity handles the login functions of the app by checking for user sign in
+//               and user up with the Fire Base Database.
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private DatabaseReference fireDatabase;
@@ -42,17 +47,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         fireDatabase = FirebaseDatabase.getInstance().getReference();
         fireAutho = FirebaseAuth.getInstance();
 
-        // Views
         loginEmailField = findViewById(R.id.field_email);
         loginPasswordField = findViewById(R.id.field_password);
         loginSignInButton = findViewById(R.id.button_sign_in);
         loginSignUpButton = findViewById(R.id.button_sign_up);
 
-        // Click listeners
         loginSignInButton.setOnClickListener(this);
         loginSignUpButton.setOnClickListener(this);
 
-        // Shared Prefs
         sharedPrefs = getSharedPreferences("username", Context.MODE_PRIVATE);
         sharedPrefsEditor = sharedPrefs.edit();
     }
@@ -61,7 +63,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onStart() {
         super.onStart();
 
-        // Check auth on Activity start
+        // Check authority status on Activity start
         if (fireAutho.getCurrentUser() != null) {
             onAuthSuccess(fireAutho.getCurrentUser());
         }
@@ -76,6 +78,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String email = loginEmailField.getText().toString();
         String password = loginPasswordField.getText().toString();
 
+        // Connects to the FireBase Database to see if the user is signed up already
         fireAutho.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -101,6 +104,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String email = loginEmailField.getText().toString();
         String password = loginPasswordField.getText().toString();
 
+        // Connects to the FireBase Database to add the user to the FireBase Database
         fireAutho.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -142,6 +146,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private boolean validateForm() {
         boolean result = true;
+
+        // Checks to make sure the user entered an input
         if (TextUtils.isEmpty(loginEmailField.getText().toString())) {
             loginEmailField.setError("Required");
             result = false;
@@ -149,6 +155,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             loginEmailField.setError(null);
         }
 
+        // Checks to make sure the user entered an input
         if (TextUtils.isEmpty(loginPasswordField.getText().toString())) {
             loginPasswordField.setError("Required");
             result = false;
@@ -159,13 +166,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return result;
     }
 
-    // [START basic_write]
+    // Uses the User model to craft a User in the FireBase Database
     private void writeNewUser(String userId, String name, String email) {
         User user = new User(name, email);
 
         fireDatabase.child("users").child(userId).setValue(user);
     }
-    // [END basic_write]
 
     @Override
     public void onClick(View v) {

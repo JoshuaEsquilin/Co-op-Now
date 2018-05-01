@@ -25,6 +25,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+// Author:       Joshua Esquilin, Cody Greene
+// Date:         4/30/2018
+// Description:  PostInfo handles showing the details of a post when a user wants to view one.
+//               It also handles comments from users that are saved alongside posts.
+
 public class PostInfo  extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = "PostInfo";
@@ -55,7 +60,7 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_info);
 
-        // Get post key from intent
+        // Get post key from intent to get post data
         mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
         if (mPostKey == null) {
             throw new IllegalArgumentException("Must pass EXTRA_POST_KEY");
@@ -91,13 +96,12 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
         super.onStart();
 
         // Add value event listener to the post
-        // [START post_value_event_listener]
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
                 Post post = dataSnapshot.getValue(Post.class);
-                // [START_EXCLUDE]
+
                 mAuthorView.setText(post.author);
                 mGameName.setText(post.gameName);
                 mPlatform.setText(post.platform);
@@ -106,21 +110,17 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
                 mHowManyPeople.setText(post.numOfPeople);
                 mAvailability.setText(post.availability);
                 mLocation.setText(post.location);
-                // [END_EXCLUDE]
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
+                // Getting Post failed, log a message and notify user
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                // [START_EXCLUDE]
                 Toast.makeText(PostInfo.this, "Failed to load post.",
                         Toast.LENGTH_SHORT).show();
-                // [END_EXCLUDE]
             }
         };
         mPostReference.addValueEventListener(postListener);
-        // [END post_value_event_listener]
 
         // Keep copy of post listener so we can remove it when app stops
         mPostListener = postListener;
@@ -134,12 +134,12 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
     public void onStop() {
         super.onStop();
 
-        // Remove post value event listener
+        // Remove post value event listener since it is not needed anymore
         if (mPostListener != null) {
             mPostReference.removeEventListener(mPostListener);
         }
 
-        // Clean up comments listener
+        // Clean up comments listener to make way for more
         mAdapter.cleanupListener();
     }
 
@@ -152,29 +152,29 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
     }
 
     private void postComment() {
+
+        // Get the user ID of the user posting
         final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         FirebaseDatabase.getInstance().getReference().child("users").child(uid)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        // Get user information
+                        // Get user information from data
                         User user = dataSnapshot.getValue(User.class);
                         String authorName = user.username;
 
-                        // Create new comment object
+                        // Create a new comment object
                         String commentText = mCommentField.getText().toString();
                         Comment comment = new Comment(uid, authorName, commentText);
 
-                        // Push the comment, it will appear in the list
+                        // Push the comment, and it will appear in the list
                         mCommentsReference.push().setValue(comment);
 
-                        // Clear the field
+                        // Clears the field
                         mCommentField.setText(null);
                     }
-
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
                     }
                 });
     }
@@ -205,22 +205,18 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
             mContext = context;
             mDatabaseReference = ref;
 
-            // Create child event listener
-            // [START child_event_listener_recycler]
             ChildEventListener childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                     Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
 
-                    // A new comment has been added, add it to the displayed list
+                    // A new comment has been added, add it to the comment list
                     Comment comment = dataSnapshot.getValue(Comment.class);
 
-                    // [START_EXCLUDE]
-                    // Update RecyclerView
+                    // Update RecyclerView to show the comment
                     mCommentIds.add(dataSnapshot.getKey());
                     mComments.add(comment);
                     notifyItemInserted(mComments.size() - 1);
-                    // [END_EXCLUDE]
                 }
 
                 @Override
@@ -232,18 +228,16 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
                     Comment newComment = dataSnapshot.getValue(Comment.class);
                     String commentKey = dataSnapshot.getKey();
 
-                    // [START_EXCLUDE]
                     int commentIndex = mCommentIds.indexOf(commentKey);
                     if (commentIndex > -1) {
-                        // Replace with the new data
+                        // Replace with the new comment data
                         mComments.set(commentIndex, newComment);
 
-                        // Update the RecyclerView
+                        // Update the RecyclerView to show the change
                         notifyItemChanged(commentIndex);
                     } else {
                         Log.w(TAG, "onChildChanged:unknown_child:" + commentKey);
                     }
-                    // [END_EXCLUDE]
                 }
 
                 @Override
@@ -251,22 +245,20 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
                     Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
 
                     // A comment has changed, use the key to determine if we are displaying this
-                    // comment and if so remove it.
+                    // comment and if so remove it to prepare for the change in onChildChanged.
                     String commentKey = dataSnapshot.getKey();
 
-                    // [START_EXCLUDE]
                     int commentIndex = mCommentIds.indexOf(commentKey);
                     if (commentIndex > -1) {
-                        // Remove data from the list
+                        // Remove data from the list of comments
                         mCommentIds.remove(commentIndex);
                         mComments.remove(commentIndex);
 
-                        // Update the RecyclerView
+                        // Update the RecyclerView to remove the comment
                         notifyItemRemoved(commentIndex);
                     } else {
                         Log.w(TAG, "onChildRemoved:unknown_child:" + commentKey);
                     }
-                    // [END_EXCLUDE]
                 }
 
                 @Override
@@ -274,10 +266,9 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
                     Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
 
                     // A comment has changed position, use the key to determine if we are
-                    // displaying this comment and if so move it.
+                    // displaying this comment and if so move it to the present DB location.
                     Comment movedComment = dataSnapshot.getValue(Comment.class);
                     String commentKey = dataSnapshot.getKey();
-
                     // ...
                 }
 
@@ -289,9 +280,8 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
                 }
             };
             ref.addChildEventListener(childEventListener);
-            // [END child_event_listener_recycler]
 
-            // Store reference to listener so it can be removed on app stop
+            // Store reference to a listener so it can be removed on app stop
             mChildEventListener = childEventListener;
         }
 

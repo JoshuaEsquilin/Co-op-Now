@@ -7,9 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
+
+// Author:       Joshua Esquilin, Cody Greene
+// Date:         4/30/2018
+// Description:  PostGallery handles the production of a list entry of a post from users in the app
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder>{
 

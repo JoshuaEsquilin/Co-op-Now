@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#ededed">
 
     <TextView
         android:id="@+id/textView_GameName"
@@ -12,7 +13,9 @@
         android:layout_height="wrap_content"
         android:maxLines="1"
         android:text="The Elder Scrolls IV: Oblivion"
-        android:textSize="18sp" />
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textView_PostDesc"
@@ -21,6 +24,7 @@
         android:maxLines="2"
         android:minLines="2"
         android:text="Oblivion is a role-playing game (RPG) that incorporates open-ended gameplay.[1] The player can follow side-quests, interact with NPCs, dispatch monsters, develop their character, and travel anywhere in the province of Cyrodiil at any time while playing the game (provided that the areas are not quest-specific and otherwise inaccessible when not questing)."
+        android:textColor="#000000"
         android:textSize="18sp" />
 
     <LinearLayout
@@ -34,7 +38,9 @@
             android:layout_weight="1"
             android:maxLines="1"
             android:text="When:"
-            android:textSize="16sp" />
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textView_Availability"
@@ -43,6 +49,7 @@
             android:layout_weight="2"
             android:maxLines="1"
             android:text="Right Now"
+            android:textColor="#000000"
             android:textSize="16sp" />
 
         <TextView
@@ -51,7 +58,9 @@
             android:layout_weight="1"
             android:maxLines="1"
             android:text="Players:"
-            android:textSize="16sp" />
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textView_numOfPeople"
@@ -60,6 +69,7 @@
             android:layout_weight="2"
             android:maxLines="1"
             android:text="1,000,000"
+            android:textColor="#000000"
             android:textSize="16sp" />
     </LinearLayout>
 </LinearLayout>

@@ -10,6 +10,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+// Author:       Joshua Esquilin, Cody Greene
+// Date:         4/30/2018
+// Description:  Post is a model for what should make up a Games Request post
+
 @IgnoreExtraProperties
 public class Post implements Serializable{
 

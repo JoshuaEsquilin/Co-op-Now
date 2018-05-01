@@ -6,11 +6,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+// Author:       Joshua Esquilin
+// Date:         4/30/2018
+// Description:  MainMenu handles the buttons navigation to make a group or see all posts
+
 public class MainMenu extends AppCompatActivity {
 
     private Button makeGroupButton;
     private Button seeAllPostsButton;
-    private Button seeAllMyPostsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +22,6 @@ public class MainMenu extends AppCompatActivity {
 
         makeGroupButton = findViewById(R.id.button_make_a_group);
         seeAllPostsButton= findViewById(R.id.button_see_all_posts);
-        seeAllMyPostsButton = findViewById(R.id.button_see_all_my_posts);
 
         makeGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,14 +35,6 @@ public class MainMenu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainMenu.this, PostGallery.class));
-                finish();
-            }
-        });
-
-        seeAllMyPostsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainMenu.this, MyPosts.class));
                 finish();
             }
         });

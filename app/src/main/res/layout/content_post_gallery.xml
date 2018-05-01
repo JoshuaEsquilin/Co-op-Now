@@ -18,8 +18,9 @@
         <Switch
             android:id="@+id/switch_SelfPostOnly"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:switchTextAppearance="@style/TextAppearance.AppCompat.Small"
             android:text="Only Show My Posts" />
     </LinearLayout>
 

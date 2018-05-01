@@ -7,14 +7,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:background="#ededed"
         android:orientation="vertical"
-        android:layout_marginLeft="10dp"
         android:padding="5dp">
 
         <TextView
             android:id="@+id/comment_author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#000000"
             android:textStyle="bold"
             tools:text="Test Name" />
 
@@ -23,6 +25,7 @@
             style="@style/TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#000000"
             tools:text="The comment appears here......." />
 
     </LinearLayout>

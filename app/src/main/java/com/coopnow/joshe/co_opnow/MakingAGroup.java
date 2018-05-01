@@ -1,7 +1,6 @@
 package com.coopnow.joshe.co_opnow;
 
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -21,14 +20,17 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
+// Author:       Joshua Esquilin, Cody Greene
+// Date:         4/30/2018
+// Description:  Making a Group handles the creation of a post and saving it to the database.
+//               After creation, it moves to PostInfo to display the contents.
+
 public class MakingAGroup extends AppCompatActivity {
 
     private static final String TAG = "MakingAGroup";
     private static final String REQUIRED = "Required";
 
-    // [START declare_database_ref]
     private DatabaseReference mDatabase;
-    // [END declare_database_ref]
 
     private EditText mGameName;
     private EditText mPlatform;
@@ -47,9 +49,7 @@ public class MakingAGroup extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_making_agroup);
 
-        // [START initialize_database_ref]
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        // [END initialize_database_ref]
 
         mGameName = findViewById(R.id.name_input);
         mPlatform = findViewById(R.id.platform_input);
@@ -59,8 +59,6 @@ public class MakingAGroup extends AppCompatActivity {
         mTime = findViewById(R.id.time_input);
         mLocation = findViewById(R.id.location_input);
         mCreateGroup = findViewById(R.id.button13);
-
-
 
         mCreateGroup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +77,7 @@ public class MakingAGroup extends AppCompatActivity {
         final String time = mTime.getText().toString();
         final String locat = mLocation.getText().toString();
 
-        // Title is required
+        // Each textField is required to be filled out by the user
         if (TextUtils.isEmpty(game)) {
             mGameName.setError(REQUIRED);
             return;
@@ -109,11 +107,10 @@ public class MakingAGroup extends AppCompatActivity {
             return;
         }
 
-        // Disable button so there are no multi-posts
+        // Disable button so there are no multi-posts from the user
         setEditingEnabled(false);
         Toast.makeText(this, "Submitting Post...", Toast.LENGTH_SHORT).show();
 
-        // [START single_value_read]
         final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         mDatabase.child("users").child(userId).addListenerForSingleValueEvent(
@@ -123,42 +120,32 @@ public class MakingAGroup extends AppCompatActivity {
                         // Get user value
                         User user = dataSnapshot.getValue(User.class);
 
-                        // [START_EXCLUDE]
                         if (user == null) {
-                            // User is null, error out
+                            // User is null, error out since the user could not be found
                             Log.e(TAG, "User " + userId + " is unexpectedly null");
                             Toast.makeText(MakingAGroup.this,
                                     "Error: could not find user.",
                                     Toast.LENGTH_SHORT).show();
                         } else {
-                            // Write new post
+                            // Write a new post to the database
                             writeNewPost(userId, user.username, game, plat, gamerT, descr, num, time, locat);
                         }
 
-                        // Finish this Activity, back to the stream
+                        // Finish this Activity,and display the indo in PostInfo
                         setEditingEnabled(true);
-
-                        //final DatabaseReference postRef = getRef(5);
-                        //final String postKey = postRef.getKey();
                         Intent intent =  new Intent(MakingAGroup.this, PostInfo.class);
                         intent.putExtra(PostInfo.EXTRA_POST_KEY, key);
                         startActivity(intent);
                         finish();
 
-                        // [END_EXCLUDE]
                     }
-
-
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                         Log.w(TAG, "getUser:onCancelled", databaseError.toException());
-                        // [START_EXCLUDE]
                         setEditingEnabled(true);
-                        // [END_EXCLUDE]
                     }
                 });
-        // [END single_value_read]
     }
 
     private void setEditingEnabled(boolean enabled) {
@@ -177,10 +164,9 @@ public class MakingAGroup extends AppCompatActivity {
         }
     }
 
-    // [START write_fan_out]
     private void writeNewPost(String userId, String username, String gameTitle, String gamePlat, String gamerT, String description, String number, String availability, String location) {
         // Create new post at /user-posts/$userid/$postid and at
-        // /posts/$postid simultaneously
+        // /posts/$postid simultaneously in the database
         key = mDatabase.child("posts").push().getKey();
         Post post = new Post(userId, username, gameTitle, gamePlat, gamerT, description, number, availability, location);
         Map<String, Object> postValues = post.toMap();
@@ -191,5 +177,4 @@ public class MakingAGroup extends AppCompatActivity {
 
         mDatabase.updateChildren(childUpdates);
     }
-    // [END write_fan_out]
 }

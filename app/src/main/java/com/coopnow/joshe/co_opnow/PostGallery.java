@@ -27,6 +27,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Map;
 
+// Author:       Joshua Esquilin, Cody Greene
+// Date:         4/30/2018
+// Description:  PostGallery handles displaying the list of posts of all users and all posts
+//               from the current signed in user from a Post Adapter.  It also has a search function
+//               to allow the user to search for a game that may be posted.
+
 public class PostGallery extends AppCompatActivity {
 
     private EditText searchQuery;
