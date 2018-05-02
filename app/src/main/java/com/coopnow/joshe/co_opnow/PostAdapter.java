@@ -41,6 +41,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder>{
     public void onBindViewHolder(PostHolder postHolder, final int i){
         postHolder.gameName.setText(data.get(i).getGameName());
         postHolder.postDesc.setText(data.get(i).getDescription());
+        postHolder.platform.setText(data.get(i).getPlatform());
         postHolder.availability.setText(data.get(i).getAvailability());
         postHolder.numOfPeople.setText(data.get(i).getNumOfPeople());
 
@@ -70,6 +71,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder>{
         TextView postDesc;
         TextView availability;
         TextView numOfPeople;
+        TextView platform;
         Context context;
         ArrayList<Post> posts;
 
@@ -81,6 +83,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder>{
             gameName = view.findViewById(R.id.textView_GameName);
             postDesc = view.findViewById(R.id.textView_PostDesc);
             availability = view.findViewById(R.id.textView_Availability);
+            platform = view.findViewById(R.id.textView_Platform);
             numOfPeople = view.findViewById(R.id.textView_numOfPeople);
         }
 

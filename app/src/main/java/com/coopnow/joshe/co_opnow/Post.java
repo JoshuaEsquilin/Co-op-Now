@@ -48,9 +48,9 @@ public class Post implements Serializable{
         this.userID = map.get("userID").toString();
         this.author = map.get("author").toString();
         this.gameName = map.get("gameName").toString();
-        this.platform = map.get("description").toString();
+        this.platform = map.get("platform").toString();
         this.gamerTag = map.get("gamerTag").toString();
-        this.description = map.get("platform").toString();
+        this.description = map.get("description").toString();
         this.numOfPeople = map.get("numOfPeople").toString();
         this.availability = map.get("availability").toString();
         this.location = map.get("location").toString();

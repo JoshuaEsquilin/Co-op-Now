@@ -39,7 +39,7 @@
                 android:layout_weight="1"
                 android:text="Overwatch_Man"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
 
         </LinearLayout>
 
@@ -65,7 +65,7 @@
                 android:layout_weight="1"
                 android:text="Overwatch"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
 
         </LinearLayout>
 
@@ -101,7 +101,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="99dp"
+            android:layout_height="96dp"
             android:orientation="horizontal">
 
             <TextView
@@ -123,7 +123,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:maxLines = "5"
+                android:maxLines="5"
                 android:text="fovdifvdofivjdofivjdofivjdofivmjdofivdofivpso;kmlkmmmmmmmmmmmmmmmmmmmmcksdjnskdjvnkdsjvnkjdsv;dlkfmlkfdmdfl"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textSize="15sp" />
@@ -155,7 +155,7 @@
                 android:layout_weight="1"
                 android:text="Gametag Name"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
 
         </LinearLayout>
 
@@ -185,7 +185,7 @@
                 android:layout_weight="1"
                 android:text="2 in total"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
 
         </LinearLayout>
 
@@ -215,7 +215,7 @@
                 android:layout_weight="1"
                 android:text="Anytime on the Weekends"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
 
         </LinearLayout>
 
@@ -245,7 +245,7 @@
                 android:layout_weight="1"
                 android:text="USA"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
 
         </LinearLayout>
 
