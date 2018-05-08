@@ -25,26 +25,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 // Author:       Joshua Esquilin, Cody Greene
-// Date:         4/30/2018
+// Date:         5/8/2018
 // Description:  Making a Group handles the creation of a post and saving it to the database.
 //               After creation, it moves to PostInfo to display the contents.
 
 public class MakingAGroup extends Fragment {
 
-    private static final String TAG = "MakingAGroup";
-    private static final String REQUIRED = "Required";
+    private DatabaseReference fireDatabase;
 
-    private DatabaseReference mDatabase;
+    private EditText textGameName;
+    private EditText textPlatform;
+    private EditText textGamerTag;
+    private EditText textDescription;
+    private EditText textNumberOfPeople;
+    private EditText textTime;
+    private EditText textLocation;
 
-    private EditText mGameName;
-    private EditText mPlatform;
-    private EditText mGamerTag;
-    private EditText mDescription;
-    private EditText mNumberOfPeople;
-    private EditText mTime;
-    private EditText mLocation;
-
-    private Button mCreateGroup;
+    private Button buttonCreateGroup;
 
     String key;
 
@@ -59,18 +56,18 @@ public class MakingAGroup extends Fragment {
         super.onActivityCreated(savedInstanceState);
         View view = getView();
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        fireDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mGameName = view.findViewById(R.id.name_input);
-        mPlatform = view.findViewById(R.id.platform_input);
-        mGamerTag = view.findViewById(R.id.gamertag_input);
-        mDescription = view.findViewById(R.id.Desc_input);
-        mNumberOfPeople = view.findViewById(R.id.numPeople_input);
-        mTime = view.findViewById(R.id.time_input);
-        mLocation = view.findViewById(R.id.location_input);
-        mCreateGroup = view.findViewById(R.id.button13);
+        textGameName = view.findViewById(R.id.name_input);
+        textPlatform = view.findViewById(R.id.platform_input);
+        textGamerTag = view.findViewById(R.id.gamertag_input);
+        textDescription = view.findViewById(R.id.Desc_input);
+        textNumberOfPeople = view.findViewById(R.id.numPeople_input);
+        textTime = view.findViewById(R.id.time_input);
+        textLocation = view.findViewById(R.id.location_input);
+        buttonCreateGroup = view.findViewById(R.id.button13);
 
-        mCreateGroup.setOnClickListener(new View.OnClickListener() {
+        buttonCreateGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 submitPost();
@@ -78,43 +75,42 @@ public class MakingAGroup extends Fragment {
         });
     }
 
-
     private void submitPost() {
-        final String game = mGameName.getText().toString();
-        final String plat = mPlatform.getText().toString();
-        final String gamerT = mGamerTag.getText().toString();
-        final String descr = mDescription.getText().toString();
-        final String num = mNumberOfPeople.getText().toString();
-        final String time = mTime.getText().toString();
-        final String locat = mLocation.getText().toString();
+        final String game = textGameName.getText().toString();
+        final String plat = textPlatform.getText().toString();
+        final String gamerT = textGamerTag.getText().toString();
+        final String descr = textDescription.getText().toString();
+        final String num = textNumberOfPeople.getText().toString();
+        final String time = textTime.getText().toString();
+        final String locat = textLocation.getText().toString();
 
-        // Each textField is required to be filled out by the user
+        // Each textField is "Required" to be filled out by the user
         if (TextUtils.isEmpty(game)) {
-            mGameName.setError(REQUIRED);
+            textGameName.setError("Required");
             return;
         }
         if (TextUtils.isEmpty(plat)) {
-            mPlatform.setError(REQUIRED);
+            textPlatform.setError("Required");
             return;
         }
         if (TextUtils.isEmpty(plat)) {
-            mGamerTag.setError(REQUIRED);
+            textGamerTag.setError("Required");
             return;
         }
         if (TextUtils.isEmpty(descr)) {
-            mDescription.setError(REQUIRED);
+            textDescription.setError("Required");
             return;
         }
         if (TextUtils.isEmpty(num)) {
-            mNumberOfPeople.setError(REQUIRED);
+            textNumberOfPeople.setError("Required");
             return;
         }
         if (TextUtils.isEmpty(time)) {
-            mTime.setError(REQUIRED);
+            textTime.setError("Required");
             return;
         }
         if (TextUtils.isEmpty(locat)) {
-            mLocation.setError(REQUIRED);
+            textLocation.setError("Required");
             return;
         }
 
@@ -124,7 +120,7 @@ public class MakingAGroup extends Fragment {
 
         final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        mDatabase.child("users").child(userId).addListenerForSingleValueEvent(
+        fireDatabase.child("users").child(userId).addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -133,9 +129,9 @@ public class MakingAGroup extends Fragment {
 
                         if (user == null) {
                             // User is null, error out since the user could not be found
-                            Log.e(TAG, "User " + userId + " is unexpectedly null");
+                            Log.e("MakingAGroup", "User " + userId + " is null for an unknown reason");
                             Toast.makeText(getActivity(),
-                                    "Error: could not find user.",
+                                    "Error: could not find user in database.",
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             // Write a new post to the database
@@ -145,39 +141,39 @@ public class MakingAGroup extends Fragment {
                         // Finish this Activity,and display the indo in PostInfo
                         setEditingEnabled(true);
                         Intent intent =  new Intent(getActivity(), PostInfo.class);
-                        intent.putExtra(PostInfo.EXTRA_POST_KEY, key);
+                        intent.putExtra("post_key", key);
                         startActivity(intent);
 
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.w(TAG, "getUser:onCancelled", databaseError.toException());
+                        Log.w("MakingAGroup", "getUser:onCancelled", databaseError.toException());
                         setEditingEnabled(true);
                     }
                 });
     }
 
     private void setEditingEnabled(boolean enabled) {
-        mGameName.setEnabled(enabled);
-        mPlatform.setEnabled(enabled);
-        mGamerTag.setEnabled(enabled);
-        mDescription.setEnabled(enabled);
-        mNumberOfPeople.setEnabled(enabled);
-        mTime.setEnabled(enabled);
-        mLocation.setEnabled(enabled);
+        textGameName.setEnabled(enabled);
+        textPlatform.setEnabled(enabled);
+        textGamerTag.setEnabled(enabled);
+        textDescription.setEnabled(enabled);
+        textNumberOfPeople.setEnabled(enabled);
+        textTime.setEnabled(enabled);
+        textLocation.setEnabled(enabled);
 
         if (enabled) {
-            mCreateGroup.setVisibility(View.VISIBLE);
+            buttonCreateGroup.setVisibility(View.VISIBLE);
         } else {
-            mCreateGroup.setVisibility(View.GONE);
+            buttonCreateGroup.setVisibility(View.GONE);
         }
     }
 
     private void writeNewPost(String userId, String username, String gameTitle, String gamePlat, String gamerT, String description, String number, String availability, String location) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously in the database
-        key = mDatabase.child("posts").push().getKey();
+        key = fireDatabase.child("posts").push().getKey();
         Post post = new Post(userId, username, gameTitle, gamePlat, gamerT, description, number, availability, location);
         Map<String, Object> postValues = post.toMap();
 
@@ -185,6 +181,6 @@ public class MakingAGroup extends Fragment {
         childUpdates.put("/posts/" + key, postValues);
         childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
 
-        mDatabase.updateChildren(childUpdates);
+        fireDatabase.updateChildren(childUpdates);
     }
 }

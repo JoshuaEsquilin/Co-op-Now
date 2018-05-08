@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 
-// Author:       Joshua Esquilin
-// Date:         4/30/2018
+// Author:       Joshua Esquilin and Cody Greene
+// Date:         5/8/2018
 // Description:  MainMenu handles the buttons navigation to make a group or see all posts
 
 public class MainMenu extends Fragment {

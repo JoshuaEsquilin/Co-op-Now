@@ -22,14 +22,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 // Author:       Joshua Esquilin
-// Date:         4/30/2018
+// Date:         5/8/2018
 // Description:  LoginActivity handles the login functions of the app by checking for user sign in
 //               and user up with the Fire Base Database.
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private DatabaseReference fireDatabase;
-    private FirebaseAuth fireAutho;
+    private FirebaseAuth fireAuth;
 
     private EditText loginEmailField;
     private EditText loginPasswordField;
@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
 
         fireDatabase = FirebaseDatabase.getInstance().getReference();
-        fireAutho = FirebaseAuth.getInstance();
+        fireAuth = FirebaseAuth.getInstance();
 
         loginEmailField = findViewById(R.id.field_email);
         loginPasswordField = findViewById(R.id.field_password);
@@ -64,8 +64,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onStart();
 
         // Check authority status on Activity start
-        if (fireAutho.getCurrentUser() != null) {
-            onAuthSuccess(fireAutho.getCurrentUser());
+        if (fireAuth.getCurrentUser() != null) {
+            onAuthSuccess(fireAuth.getCurrentUser());
         }
     }
 
@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String password = loginPasswordField.getText().toString();
 
         // Connects to the FireBase Database to see if the user is signed up already
-        fireAutho.signInWithEmailAndPassword(email, password)
+        fireAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (task.isSuccessful()) {
                             onAuthSuccess(task.getResult().getUser());
                         } else {
-                            Toast.makeText(LoginActivity.this, "Sign In Failed",
+                            Toast.makeText(LoginActivity.this, "Sign In Has Failed",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -105,7 +105,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String password = loginPasswordField.getText().toString();
 
         // Connects to the FireBase Database to add the user to the FireBase Database
-        fireAutho.createUserWithEmailAndPassword(email, password)
+        fireAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -114,7 +114,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (task.isSuccessful()) {
                             onAuthSuccess(task.getResult().getUser());
                         } else {
-                            Toast.makeText(LoginActivity.this, "Sign Up Failed",
+                            Toast.makeText(LoginActivity.this, "Sign Up Has Failed",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }

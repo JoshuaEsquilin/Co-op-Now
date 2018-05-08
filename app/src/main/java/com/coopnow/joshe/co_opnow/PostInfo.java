@@ -26,68 +26,65 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Author:       Joshua Esquilin, Cody Greene
-// Date:         4/30/2018
+// Date:         5/8/2018
 // Description:  PostInfo handles showing the details of a post when a user wants to view one.
 //               It also handles comments from users that are saved alongside posts.
 
 public class PostInfo  extends AppCompatActivity implements View.OnClickListener{
 
-    private static final String TAG = "PostInfo";
+    private DatabaseReference dbPostReference;
+    private DatabaseReference dbCommentsReference;
+    private ValueEventListener dbvPostListener;
+    private String postKey;
+    private CommentAdapter cmAdapter;
 
-    public static final String EXTRA_POST_KEY = "post_key";
+    private TextView textAuthorView;
+    private TextView textGameName;
+    private TextView textPlatform;
+    private TextView textGamertag;
+    private TextView textDescription;
+    private TextView textHowManyPeople;
+    private TextView textAvailability;
+    private TextView textLocation;
 
-    private DatabaseReference mPostReference;
-    private DatabaseReference mCommentsReference;
-    private ValueEventListener mPostListener;
-    private String mPostKey;
-    private CommentAdapter mAdapter;
-
-    private TextView mAuthorView;
-    private TextView mGameName;
-    private TextView mPlatform;
-    private TextView mGamertag;
-    private TextView mDescription;
-    private TextView mHowManyPeople;
-    private TextView mAvailability;
-    private TextView mLocation;
-
-    private EditText mCommentField;
-    private Button mCommentButton;
-    private RecyclerView mCommentsRecycler;
+    private EditText editTCommentField;
+    private Button commentButton;
+    private RecyclerView commentsRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_info);
 
-        // Get post key from intent to get post data
-        mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-        if (mPostKey == null) {
-            throw new IllegalArgumentException("Must pass EXTRA_POST_KEY");
+        // Get post key from intent to get post data, if not notify it notifies us that we
+        // didn't pass the post key to the activity.
+        postKey = getIntent().getStringExtra("post_key");
+        if (postKey == null) {
+            throw new IllegalArgumentException("Must pass post_key");
         }
 
         // Initialize Database
-        mPostReference = FirebaseDatabase.getInstance().getReference()
-                .child("posts").child(mPostKey);
-        mCommentsReference = FirebaseDatabase.getInstance().getReference()
-                .child("post-comments").child(mPostKey);
+        dbPostReference = FirebaseDatabase.getInstance().getReference()
+                .child("posts").child(postKey);
+        dbCommentsReference = FirebaseDatabase.getInstance().getReference()
+                .child("post-comments").child(postKey);
 
         // Initialize Views
-        mAuthorView = findViewById(R.id.post_author);
-        mGameName = findViewById(R.id.post_game_name);
-        mPlatform = findViewById(R.id.post_platform);
-        mGamertag = findViewById(R.id.post_gamertag);
-        mDescription = findViewById(R.id.post_description);
-        mHowManyPeople = findViewById(R.id.post_how_many_people);
-        mAvailability = findViewById(R.id.post_avail);
-        mLocation = findViewById(R.id.post_locat);
+        textAuthorView = findViewById(R.id.post_author);
+        textGameName = findViewById(R.id.post_game_name);
+        textPlatform = findViewById(R.id.post_platform);
+        textGamertag = findViewById(R.id.post_gamertag);
+        textDescription = findViewById(R.id.post_description);
+        textHowManyPeople = findViewById(R.id.post_how_many_people);
+        textAvailability = findViewById(R.id.post_avail);
+        textLocation = findViewById(R.id.post_locat);
 
-        mCommentField = findViewById(R.id.comment_input);
-        mCommentButton = findViewById(R.id.button_post_comment);
-        mCommentsRecycler = findViewById(R.id.recycler_comments);
+        editTCommentField = findViewById(R.id.comment_input);
+        commentButton = findViewById(R.id.button_post_comment);
+        commentsRecycler = findViewById(R.id.recycler_comments);
 
-        mCommentButton.setOnClickListener(this);
-        mCommentsRecycler.setLayoutManager(new LinearLayoutManager(this));
+        commentButton.setOnClickListener(this);
+        commentsRecycler.setLayoutManager(new LinearLayoutManager(this));
 
     }
 
@@ -102,32 +99,32 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
                 // Get Post object and use the values to update the UI
                 Post post = dataSnapshot.getValue(Post.class);
 
-                mAuthorView.setText(post.author);
-                mGameName.setText(post.gameName);
-                mPlatform.setText(post.platform);
-                mGamertag.setText(post.gamerTag);
-                mDescription.setText(post.description);
-                mHowManyPeople.setText(post.numOfPeople);
-                mAvailability.setText(post.availability);
-                mLocation.setText(post.location);
+                textAuthorView.setText(post.author);
+                textGameName.setText(post.gameName);
+                textPlatform.setText(post.platform);
+                textGamertag.setText(post.gamerTag);
+                textDescription.setText(post.description);
+                textHowManyPeople.setText(post.numOfPeople);
+                textAvailability.setText(post.availability);
+                textLocation.setText(post.location);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message and notify user
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                Log.w("PostInfo", "loadPost:onCancelled", databaseError.toException());
                 Toast.makeText(PostInfo.this, "Failed to load post.",
                         Toast.LENGTH_SHORT).show();
             }
         };
-        mPostReference.addValueEventListener(postListener);
+        dbPostReference.addValueEventListener(postListener);
 
         // Keep copy of post listener so we can remove it when app stops
-        mPostListener = postListener;
+        dbvPostListener = postListener;
 
         // Listen for comments
-        mAdapter = new CommentAdapter(this, mCommentsReference);
-        mCommentsRecycler.setAdapter(mAdapter);
+        cmAdapter = new CommentAdapter(this, dbCommentsReference);
+        commentsRecycler.setAdapter(cmAdapter);
     }
 
     @Override
@@ -135,12 +132,12 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
         super.onStop();
 
         // Remove post value event listener since it is not needed anymore
-        if (mPostListener != null) {
-            mPostReference.removeEventListener(mPostListener);
+        if (dbvPostListener != null) {
+            dbPostReference.removeEventListener(dbvPostListener);
         }
 
         // Clean up comments listener to make way for more
-        mAdapter.cleanupListener();
+        cmAdapter.cleanupListener();
     }
 
     @Override
@@ -164,14 +161,14 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
                         String authorName = user.username;
 
                         // Create a new comment object
-                        String commentText = mCommentField.getText().toString();
+                        String commentText = editTCommentField.getText().toString();
                         Comment comment = new Comment(uid, authorName, commentText);
 
                         // Push the comment, and it will appear in the list
-                        mCommentsReference.push().setValue(comment);
+                        dbCommentsReference.push().setValue(comment);
 
                         // Clears the field
-                        mCommentField.setText(null);
+                        editTCommentField.setText(null);
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
@@ -208,7 +205,7 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
             ChildEventListener childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                    Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+                    Log.d("PostInfo", "onChildAdded:" + dataSnapshot.getKey());
 
                     // A new comment has been added, add it to the comment list
                     Comment comment = dataSnapshot.getValue(Comment.class);
@@ -221,7 +218,7 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-                    Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
+                    Log.d("PostInfo", "onChildChanged:" + dataSnapshot.getKey());
 
                     // A comment has changed, use the key to determine if we are displaying this
                     // comment and if so displayed the changed comment.
@@ -236,13 +233,13 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
                         // Update the RecyclerView to show the change
                         notifyItemChanged(commentIndex);
                     } else {
-                        Log.w(TAG, "onChildChanged:unknown_child:" + commentKey);
+                        Log.w("PostInfo", "onChildChanged:unknown_child:" + commentKey);
                     }
                 }
 
                 @Override
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
+                    Log.d("PostInfo", "onChildRemoved:" + dataSnapshot.getKey());
 
                     // A comment has changed, use the key to determine if we are displaying this
                     // comment and if so remove it to prepare for the change in onChildChanged.
@@ -257,13 +254,13 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
                         // Update the RecyclerView to remove the comment
                         notifyItemRemoved(commentIndex);
                     } else {
-                        Log.w(TAG, "onChildRemoved:unknown_child:" + commentKey);
+                        Log.w("PostInfo", "onChildRemoved:unknown_child:" + commentKey);
                     }
                 }
 
                 @Override
                 public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-                    Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
+                    Log.d("PostInfo", "onChildMoved:" + dataSnapshot.getKey());
 
                     // A comment has changed position, use the key to determine if we are
                     // displaying this comment and if so move it to the present DB location.
@@ -274,7 +271,7 @@ public class PostInfo  extends AppCompatActivity implements View.OnClickListener
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Log.w(TAG, "postComments:onCancelled", databaseError.toException());
+                    Log.w("PostInfo", "postComments:onCancelled", databaseError.toException());
                     Toast.makeText(mContext, "Failed to load comments.",
                             Toast.LENGTH_SHORT).show();
                 }
